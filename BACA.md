@@ -19,7 +19,7 @@ Echeveria Peacockii merupakan jenis tanaman yang memiliki kekerabatan dengan kak
 | Driver | CP210X USB Driver |
 | Platform IoT | • Blynk<br>• ThingsBoard |
 | Protokol Komunikasi | • Inter Integrated Circuit (I2C)<br>• Message Queuing Telemetry Transport (MQTT)<br>• Transmission Control Protocol/Internet Protocol (TCP/IP)<br>• MTProto |
-| Arsitektur IoT | 3 Lapisan |
+| Arsitektur IoT | 4 Lapisan |
 | Bahasa Pemrograman | C/C++ |
 | Pustaka Arduino | • WiFi (bawaan)<br>• BlynkSimpleEsp32<br>• ThingsBoard<br>• PubSubClient<br>• CTBot<br>• ArduinoJson<br>• LiquidCrystal_I2C<br>• DHT_sensor_library<br>• ESP_FC28_Library |
 | Aktuator | Submersible pump (x2) |
