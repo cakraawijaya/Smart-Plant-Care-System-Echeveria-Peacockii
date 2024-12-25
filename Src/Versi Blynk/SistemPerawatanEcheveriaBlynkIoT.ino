@@ -52,8 +52,8 @@ int manualPumpControl; // Variabel ini difungsikan untuk menampung perintah yait
 
 // Variabel untuk keperluan sensor
 int adcLDR = 0, old_lux = 0, lux; const float R_FIXED = 10.0, calibrationValue = 1.2; float volt, resistance; String status_sinar, info_intensitas_cahaya; // LDR
-float old_temp = 0, temp = 0; int old_hum = 0, hum = 0; String status_udara, info_suhu_udara, info_kelembaban_udara; // DHT
-int old_moisture = 0, moisture = 0; String status_tanah, info_kelembaban_tanah; // FC-28
+float old_temp = 0, temp; int old_hum = 0, hum; String status_udara, info_suhu_udara, info_kelembaban_udara; // DHT
+int old_moisture = 0, moisture; String status_tanah, info_kelembaban_tanah; // FC-28
 
 // Kontrol air untuk menyiram tanaman echeveria
 BLYNK_WRITE(V6) {

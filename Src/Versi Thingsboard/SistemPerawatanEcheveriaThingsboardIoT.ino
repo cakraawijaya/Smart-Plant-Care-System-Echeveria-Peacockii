@@ -1,11 +1,9 @@
 // Pustaka yang digunakan
 #include <WiFi.h>
-#include <WiFiClient.h>
 #include <PubSubClient.h>
 #include <ThingsBoard.h>
 #include <ArduinoJson.h>
 #include <CTBot.h>
-#include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <DHT.h>
 #include <ESP_FC28.h>
@@ -23,7 +21,6 @@ WiFiClient wifiClient;
 PubSubClient client(wifiClient);
 StaticJsonDocument<256> DataJSON;
 char Payload[128];
-int status = WL_IDLE_STATUS;
 unsigned long lastTime = 0;
 unsigned long timerDelay = 1000;
 
@@ -56,31 +53,32 @@ String sendMsg, msg1, msg2;
 bool relayON = HIGH; bool relayOFF = LOW; // Jika anda menggunakan NO pada relay maka yang terjadi adalah Active Low, sedangkan jika anda menggunakan NC pada relay maka yang terjadi adalah Active High
 
 // Variabel untuk keperluan sensor
-const float GAMMA = 0.7, RL10 = 50; int analogLDR; float volt, resistance, cahaya; String statusSinar, info_intensitascahaya; // LDR
-int kelembaban_udara; float suhu_udara; String statusUdara, info_suhuudara, info_kelembabanudara; // DHT
-int kelembaban_tanah; String statusTanah, info_kelembabantanah; // FC-28
+float adcLDR = 0, volt, resistance, old_lux = 0, lux; const float R_FIXED = 10.0, calibrationValue = 1.2; String status_sinar, info_intensitas_cahaya; // LDR
+float old_temp = 0, temp, old_hum = 0, hum; String status_udara, info_suhu_udara, info_kelembaban_udara; // DHT
+float old_moisture = 0, moisture; String status_tanah, info_kelembaban_tanah; // FC-28
 
 // Method untuk mengatur konektivitas
-void ConnectToWiFi() {
+void connectToWiFi() {
   WiFi.mode(WIFI_STA); // Membuat perangkat sebagai station
-  status = WiFi.status(); // Status WiFi
-  if (status != WL_CONNECTED) { // Jika belum terhubung ke jaringan maka :
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD); Serial.print("Menyambungkan ke jaringan"); // Memulai jaringan
-    while (status != WL_CONNECTED) { // Selama tidak berhasil terhubung ke jaringan maka cetak di serial monitor :
-      Serial.print("."); delay(500);
-    }
-    if (status == WL_CONNECTED) { // Jika berhasil terhubung ke jaringan maka cetak di serial monitor :
-      Serial.println("\nTelah terhubung ke "+String(WIFI_SSID)+"\n\n");
-    }
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD); Serial.print("Menyambungkan ke jaringan"); // Memulai jaringan
+  while (WiFi.status() != WL_CONNECTED) { // Selama tidak berhasil terhubung ke jaringan maka cetak di serial monitor :
+    Serial.print("."); delay(500);
+  }
+  if (WiFi.status() == WL_CONNECTED) { // Jika berhasil terhubung ke jaringan maka cetak di serial monitor :
+    Serial.println("\n=========================================");
+    Serial.println("Telah terhubung ke "+String(WIFI_SSID));
+    Serial.println("=========================================\n");
   }
 }
 
 // Method untuk menyambungkan ulang ke WiFi
 void reconnect() { 
   while (!client.connected()) { // Selama client tidak terhubung ke jaringan maka :
-    ConnectToWiFi(); // Memanggil method ConnectToWiFi
+    connectToWiFi(); // Memanggil method connectToWiFi
     if (client.connect(DEVICE_ID_TB, ACCESS_TOKEN_TB, "")) { // Jika berhasil terhubung ke ThingsBoard maka cetak di serial monitor :
-      Serial.println("Menyambungkan ke Node ThingsBoard ...[SUKSES]\n");
+      Serial.println("\n=========================================");
+      Serial.println("Menyambungkan ke Node ThingsBoard ...[SUKSES]");
+      Serial.println("=========================================\n");
     } 
   }
 }
@@ -93,7 +91,9 @@ void connectBot() {
   Serial.println("Menghubungkan ke: echeveria_bot..."); // Cetak ke serial monitor
 
   if(myBot.testConnection()){ // Jika bot telegram tersambung ke jaringan maka cetak ke serial monitor :
+    Serial.println("\n=========================================");
     Serial.println("Bot telegram berhasil tersambung ...[SUKSES]"); 
+    Serial.println("=========================================\n");
   } else{ // Jika bot telegram tidak tersambung ke jaringan maka cetak ke serial monitor :
     Serial.print("Bot telegram gagal tersambung\nMenyambungkan kembali"); 
     while (!myBot.testConnection()){ // Selama bot telegram tidak tersambung ke jaringan maka cetak ke serial monitor :
@@ -103,129 +103,137 @@ void connectBot() {
 }
 
 // Method untuk membaca sensor
-void BacaSensor(){
-  // Baca nilai sensor DHT22
-  suhu_udara = dht.readTemperature();
-  kelembaban_udara = dht.readHumidity();
-  
-  // Baca nilai sensor FC-28
-  fc28.calibration(7); // 7 => agar pembacaan sensor mendekati benar (diisi bebas)
-  kelembaban_tanah = fc28.getSoilMoisture();
-  
-  // Baca nilai sensor LDR
-  analogLDR = analogRead(LDR_PIN);
-  volt = analogLDR * 5 / 4095.0;
-  resistance = 2000 * volt / (1 - volt / 5);
-  cahaya = pow(RL10 * 1e3 * pow(10, GAMMA) / resistance, (1 / GAMMA));
-  
-  // Memasukan data sensor ke dalam array
-  DataJSON["Suhu Udara"] = String(suhu_udara);
-  DataJSON["Kelembaban Udara"] = String(kelembaban_udara);
-  DataJSON["Kelembaban Tanah"] = String(kelembaban_tanah);
-  DataJSON["Intensitas Cahaya"] = String(cahaya);
+void readSensor(){
+  // Mengukur nilai temperatur udara
+  temp = dht.readTemperature();
+
+  // Cek perubahan nilai temperatur udara
+  if(temp != old_temp){  
+    Serial.println("Suhu Udara: "+String(temp, 2)+"°C");
+    lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Suhu Udara:"); 
+    lcd.setCursor(1,1); lcd.print(""+String(temp, 2)+" "+String((char)223)+"C"); delay(1000);
+    DataJSON["Suhu Udara"] = String(temp, 2);
+    old_temp = temp; 
+  }
+
+  // Mengukur nilai kelembaban udara
+  hum = dht.readHumidity(); 
+
+  // Cek perubahan nilai kelembaban udara
+  if(hum != old_hum){ 
+    Serial.println("Kelembaban Udara: "+String(hum, 2)+"%");  
+    lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Kelem.Udara:"); 
+    lcd.setCursor(1,1); lcd.print(""+String(hum, 2)+" %"); delay(1000);
+    DataJSON["Kelembaban Udara"] = String(hum, 2);
+    old_hum = hum; 
+  }
+
+  // Mengukur nilai kelembaban tanah
+  fc28.calibration(7); // 7 => agar pembacaan sensor fc28 mendekati benar (diisi bebas)
+  moisture = fc28.getSoilMoisture(); 
+
+  // Cek perubahan nilai kelembaban tanah
+  if(moisture != old_moisture){ 
+    Serial.println("Kelembaban Tanah: "+String(moisture, 2)+"%");
+    lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Kelem.Tanah:"); 
+    lcd.setCursor(1,1); lcd.print(""+String(moisture, 2)+" %"); delay(1000);
+    DataJSON["Kelembaban Tanah"] = String(moisture, 2);
+    old_moisture = moisture; 
+  }
+
+  // Mengukur nilai intensitas cahaya
+  adcLDR = analogRead(LDR_PIN); // Baca ADC Sensor LDR
+  volt = (adcLDR / 4095.0) * 5; // ESP bit=12 -> 4095, 5=Tegangan Referensi
+  resistance = (5 * R_FIXED / volt) - R_FIXED; // Menghitung Resistansi Cahaya
+
+  // Menghitung nilai lux
+  lux = 500 / pow(resistance / 1000, calibrationValue);
+  if(lux >= 100000){ lux = 100000; }
+  if(lux < 0){ lux = 0; }
+
+  // Cek perubahan nilai lux
+  if(lux != old_lux){ 
+    Serial.println("Intensitas Cahaya: "+String(lux, 2)+"lux");
+    lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Int.Cahaya:"); 
+    lcd.setCursor(1,1); lcd.print(""+String(lux, 2)+" lx"); delay(1000);
+    DataJSON["Intensitas Cahaya"] = String(lux, 2);
+    old_lux = lux; 
+  }
+
+  autoPumpControl(); // Memanggil method autoPumpControl
 }
 
-// Method untuk menentukan batasan suhu, kelembaban, dan intensitas cahaya
-void TresholdSensorState(){
-  // Jika suhu udara rendah, maka :
-  if (suhu_udara >= 0 && suhu_udara < 16) { 
-    info_suhuudara = "Suhu Udara: Rendah";                   // Dingin
-    statusUdara = "Status Kualitas Udara: Bahaya";           // Status Udara: Bahaya
-    DataJSON["Pompa 1"] = "0";                               // Indikator Pompa 1: mati
-    digitalWrite(RPOMPA1_PIN, relayOFF);                     // Pompa 1 mati
+// Method untuk mengendalikan pompa otomatis
+void autoPumpControl(){
+  // Jika suhu udara rendah / kelembaban tinggi / intensitas cahaya rendah / tanah basah, maka :
+  if (temp >= 0 && temp < 16 || hum > 90 && hum <= 100 || lux >= 0 && lux < 200 || moisture >= 60 && moisture <= 100) {
+    if (temp >= 0 && temp < 16) { 
+      info_suhu_udara = "Suhu Udara: Rendah";                   // Dingin
+      status_udara = "Status Kualitas Udara: Bahaya";           // Status Udara: Bahaya
+    }
+    if (hum > 90 && hum <= 100) {
+      info_kelembaban_udara = "Kelembaban Udara: Tinggi";       // Basah
+      status_udara = "Status Kualitas Udara: Bahaya";           // Status Udara: Bahaya
+    }
+    if (lux >= 0 && lux < 200) {
+      info_intensitas_cahaya = "Intensitas Cahaya: Rendah";     // Gelap
+      status_sinar = "Status Kualitas Sinar: Aman";             // Status Sinar: Aman
+    }
+    if (moisture >= 60 && moisture <= 100){
+      info_kelembaban_tanah = "Kelembaban Tanah: Tinggi";       // Basah
+      status_tanah = "Status Kualitas Tanah: Bahaya";           // Status Tanah: Bahaya
+    }    
+    DataJSON["Pompa 1"] = "0";                                  // Indikator Pompa 1: mati
+    digitalWrite(RPOMPA1_PIN, relayOFF);                        // Pompa 1 mati
   }
 
-  // Jika kelembaban tinggi, maka :
-  if (kelembaban_udara > 90 && kelembaban_udara <= 100) {
-    info_kelembabanudara = "Kelembaban Udara: Tinggi";       // Basah
-    statusUdara = "Status Kualitas Udara: Bahaya";           // Status Udara: Bahaya
-    DataJSON["Pompa 1"] = "0";                               // Indikator Pompa 1: mati
-    digitalWrite(RPOMPA1_PIN, relayOFF);                     // Pompa 1 mati
+  // Jika suhu udara sedang / kelembaban sedang / intensitas cahaya sedang / tanah lembab, maka :  
+  if (temp >= 16 && temp <= 34 || hum >= 30 && hum <= 90 || lux >= 200 && lux < 500 || moisture > 40 && moisture < 60) { 
+    if (temp >= 16 && temp <= 34) { 
+      info_suhu_udara = "Suhu Udara: Normal";                   // Normal
+      status_udara = "Status Kualitas Udara: Aman";             // Status Udara: Aman
+    }
+    if (hum >= 30 && hum <= 90) { 
+      info_kelembaban_udara = "Kelembaban Udara: Normal";       // Lembab
+      status_udara = "Status Kualitas Udara: Aman";             // Status Udara: Aman
+    }
+    if (lux >= 200 && lux < 500) {
+      info_intensitas_cahaya = "Intensitas Cahaya: Normal";     // Remang-remang
+      status_sinar = "Status Kualitas Sinar: Aman";             // Status Sinar: Aman
+    }
+    if (moisture > 40 && moisture < 60) { 
+      info_kelembaban_tanah = "Kelembaban Tanah: Normal";       // Lembab
+      status_tanah = "Status Kualitas Tanah: Aman";             // Status Tanah: Aman
+    }
+    DataJSON["Pompa 1"] = "0";                                  // Indikator Pompa 1: mati
+    digitalWrite(RPOMPA1_PIN, relayOFF);                        // Pompa 1 mati
   }
 
-  // Jika intensitas cahaya rendah, maka :
-  if (cahaya >= 500 && cahaya <= 100000) {
-    info_intensitascahaya = "Intensitas Cahaya: Rendah";     // Gelap
-    statusSinar = "Status Kualitas Sinar: Aman";             // Status Sinar: Aman
-    DataJSON["Pompa 1"] = "0";                               // Indikator Pompa 1: mati
-    digitalWrite(RPOMPA1_PIN, relayOFF);                     // Pompa 1 mati
-  }
-
-  // Jika suhu udara sedang, maka :  
-  if (suhu_udara >= 16 && suhu_udara <= 34) { 
-    info_suhuudara = "Suhu Udara: Normal";                   // Normal
-    statusUdara = "Status Kualitas Udara: Aman";             // Status Udara: Aman
-    DataJSON["Pompa 1"] = "0";                               // Indikator Pompa 1: mati
-    digitalWrite(RPOMPA1_PIN, relayOFF);                     // Pompa 1 mati
-  }
-  
-  // Jika kelembaban sedang, maka :
-  if (kelembaban_udara >= 30 && kelembaban_udara <= 90) { 
-    info_kelembabanudara = "Kelembaban Udara: Normal";       // Lembab
-    statusUdara = "Status Kualitas Udara: Aman";             // Status Udara: Aman
-    DataJSON["Pompa 1"] = "0";                               // Indikator Pompa 1: mati
-    digitalWrite(RPOMPA1_PIN, relayOFF);                     // Pompa 1 mati
-  }
-
-  // Jika intensitas cahaya sedang, maka :
-  if (cahaya >= 200 && cahaya < 500) {
-    info_intensitascahaya = "Intensitas Cahaya: Normal";     // Remang-remang
-    statusSinar = "Status Kualitas Sinar: Aman";             // Status Sinar: Aman
-    DataJSON["Pompa 1"] = "0";                               // Indikator Pompa 1: mati
-    digitalWrite(RPOMPA1_PIN, relayOFF);                     // Pompa 1 mati
-  }
-
-  // Jika suhu udara tinggi, maka :
-  if (suhu_udara > 34 && suhu_udara <= 80) { 
-    info_suhuudara = "Suhu Udara: Tinggi";                   // Panas
-    statusUdara = "Status Kualitas Udara: Bahaya";           // Status Udara: Bahaya
-    DataJSON["Pompa 1"] = "1";                               // Indikator Pompa 1: menyala
-    digitalWrite(RPOMPA1_PIN, relayON);                      // Pompa 1 menyala
-  }
-  
-  // Jika kelembaban rendah, maka :
-  if (kelembaban_udara >= 0 && kelembaban_udara < 30) {
-    info_kelembabanudara = "Kelembaban Udara: Rendah";       // Kering
-    statusUdara = "Status Kualitas Udara: Bahaya";           // Status Udara: Bahaya
-    DataJSON["Pompa 1"] = "1";                               // Indikator Pompa 1: menyala
-    digitalWrite(RPOMPA1_PIN, relayON);                      // Pompa 1 menyala
-  }
-
-  // Jika intensitas cahaya tinggi, maka :
-  if (cahaya >= 0 && cahaya < 200) {
-    info_intensitascahaya = "Intensitas Cahaya: Tinggi";     // Cerah
-    statusSinar = "Status Kualitas Sinar: Bahaya";           // Status Sinar: Bahaya
-    DataJSON["Pompa 1"] = "1";                               // Indikator Pompa 1: menyala
-    digitalWrite(RPOMPA1_PIN, relayON);                      // Pompa 1 menyala
-  }
-
-  // Jika kondisi tanah basah maka :
-  if (kelembaban_tanah >= 60 && kelembaban_tanah <= 100){
-    info_kelembabantanah = "Kelembaban Tanah: Tinggi";       // Basah
-    statusTanah = "Status Kualitas Tanah: Bahaya";           // Status Tanah: Bahaya
-    DataJSON["Pompa 1"] = "0";                               // Indikator Pompa 1: mati
-    digitalWrite(RPOMPA1_PIN, relayOFF);                     // Pompa 1 mati
-  }
-
-  // Jika kondisi tanah lembab maka :
-  if (kelembaban_tanah > 40 && kelembaban_tanah < 60) { 
-    info_kelembabantanah = "Kelembaban Tanah: Normal";       // Lembab
-    statusTanah = "Status Kualitas Tanah: Aman";             // Status Tanah: Aman
-    DataJSON["Pompa 1"] = "0";                               // Indikator Pompa 1: mati
-    digitalWrite(RPOMPA1_PIN, relayOFF);                     // Pompa 1 mati
-  }
-
-  // Jika kondisi tanah kering maka :
-  if (kelembaban_tanah >= 0 && kelembaban_tanah <= 40) {
-    info_kelembabantanah = "Kelembaban Tanah: Rendah";       // Kering
-    statusTanah = "Status Kualitas Tanah: Bahaya";           // Status Tanah: Bahaya
-    DataJSON["Pompa 1"] = "1";                               // Indikator Pompa 1: menyala
-    digitalWrite(RPOMPA1_PIN, relayON);                      // Pompa 1 menyala
+  // Jika suhu udara tinggi / kelembaban rendah / intensitas cahaya tinggi / tanah kering, maka :
+  if (temp > 34 && temp <= 80 || hum >= 0 && hum < 30 || lux >= 500 && lux <= 100000 || moisture >= 0 && moisture <= 40) { 
+    if (temp > 34 && temp <= 80) {
+      info_suhu_udara = "Suhu Udara: Tinggi";                   // Panas
+      status_udara = "Status Kualitas Udara: Bahaya";           // Status Udara: Bahaya
+    }
+    if (hum >= 0 && hum < 30) {
+      info_kelembaban_udara = "Kelembaban Udara: Rendah";       // Kering
+      status_udara = "Status Kualitas Udara: Bahaya";           // Status Udara: Bahaya
+    }
+    if (lux >= 500 && lux <= 100000) {
+      info_intensitas_cahaya = "Intensitas Cahaya: Tinggi";     // Cerah
+      status_sinar = "Status Kualitas Sinar: Bahaya";           // Status Sinar: Bahaya
+    }
+    if (moisture >= 0 && moisture <= 40) {
+      info_kelembaban_tanah = "Kelembaban Tanah: Rendah";       // Kering
+      status_tanah = "Status Kualitas Tanah: Bahaya";           // Status Tanah: Bahaya
+    }
+    DataJSON["Pompa 1"] = "1";                                  // Indikator Pompa 1: menyala
+    digitalWrite(RPOMPA1_PIN, relayON);                         // Pompa 1 menyala
   }
 }
 
 // Method untuk kirim data sensor ke Thingsboard melalui protokol MQTT
-void KirimTB(){
+void sendTB(){
   serializeJson(DataJSON, Payload);
   client.publish("v1/devices/me/telemetry/fpiotdevan", Payload);
   client.publish("v1/devices/me/attributes/fpiotdevan", Payload);
@@ -233,7 +241,7 @@ void KirimTB(){
 }
 
 // Method untuk mengatur visualisasi tombol bot telegram
-void ButtonBot() { 
+void buttonBot() { 
   // Monitoring menu dalam bentuk inline button
   InlineKey.addButton("🌤️ Monitoring Temperature", InlineMenu1, CTBotKeyboardButtonQuery);
   InlineKey.addRow();
@@ -273,42 +281,42 @@ void botTelegram() {
     else if(msg.messageType == CTBotMessageQuery){ // Respon Inline Button
       if(msg.callbackQueryData.equals(InlineMenu1)){ // Menampilkan data monitoring suhu udara beserta statusnya
         Serial.println("\n<------------------------------->");
-        Serial.println("Deteksi Suhu Udara: " + String(suhu_udara, 2) + "°C");
-        Serial.println(info_suhuudara);
-        Serial.println(statusUdara);
+        Serial.println("Deteksi Suhu Udara: " + String(temp, 2) + "°C");
+        Serial.println(info_suhu_udara);
+        Serial.println(status_udara);
         Serial.println("<------------------------------->\n");
         msg1 = "🙋🏻‍♂️ Hai @" + msg.sender.username + " 👋👋\nBerikut hasil monitoring suhu udara pada tanaman echeveria terkini:\n\n--------------------------------------------------------------\n 🌤️ MONITORING TEMPERATURE \n--------------------------------------------------------------\n";
-        msg2 = "📲 Suhu udara tanaman: " + String(suhu_udara) + "°C\n✍️ " + String(statusUdara) + "\n--------------------------------------------------------------"; 
+        msg2 = "📲 Suhu udara tanaman: " + String(temp, 2) + "°C\n✍️ " + String(status_udara) + "\n--------------------------------------------------------------"; 
         sendMsg = msg1 + msg2; myBot.sendMessage(msg.sender.id, sendMsg); // Mengirim pesan
       }
       else if(msg.callbackQueryData.equals(InlineMenu2)){ // Menampilkan data monitoring kelembaban udara beserta statusnya
         Serial.println("\n<------------------------------->");
-        Serial.println("Deteksi Kelembaban Udara: " + String(kelembaban_udara) + "%");
-        Serial.println(info_kelembabanudara);
-        Serial.println(statusUdara);
+        Serial.println("Deteksi Kelembaban Udara: " + String(hum, 2) + "%");
+        Serial.println(info_kelembaban_udara);
+        Serial.println(status_udara);
         Serial.println("<------------------------------->\n");
         msg1 = "🙋🏻‍♂️ Hai @" + msg.sender.username + " 👋👋\nBerikut hasil monitoring kelembaban udara pada tanaman echeveria terkini:\n\n--------------------------------------------------------------\n 🌦️ MONITORING HUMIDITY \n--------------------------------------------------------------\n";
-        msg2 = "📲 Kelembaban udara tanaman: " + String(kelembaban_udara) + "%\n✍️ " + String(statusUdara) + "\n--------------------------------------------------------------"; 
+        msg2 = "📲 Kelembaban udara tanaman: " + String(hum, 2) + "%\n✍️ " + String(status_udara) + "\n--------------------------------------------------------------"; 
         sendMsg = msg1 + msg2; myBot.sendMessage(msg.sender.id, sendMsg); // Mengirim pesan
       }
       else if(msg.callbackQueryData.equals(InlineMenu3)){ // Menampilkan data monitoring kelembaban tanah beserta statusnya
         Serial.println("\n<------------------------------->");
-        Serial.println("Deteksi Kelembaban Tanah: " + String(kelembaban_tanah) + "%");
-        Serial.println(info_kelembabantanah);
-        Serial.println(statusTanah);
+        Serial.println("Deteksi Kelembaban Tanah: " + String(moisture, 2) + "%");
+        Serial.println(info_kelembaban_tanah);
+        Serial.println(status_tanah);
         Serial.println("<------------------------------->\n");
         msg1 = "🙋🏻‍♂️ Hai @" + msg.sender.username + " 👋👋\nBerikut hasil monitoring kelembaban tanah pada tanaman echeveria terkini:\n\n--------------------------------------------------------------\n 🌱 MONITORING SOIL MOISTURE \n--------------------------------------------------------------\n";
-        msg2 = "📲 Kelembaban tanah tanaman: " + String(kelembaban_tanah) + "%\n✍️ " + String(statusTanah) + "\n--------------------------------------------------------------"; 
+        msg2 = "📲 Kelembaban tanah tanaman: " + String(moisture, 2) + "%\n✍️ " + String(status_tanah) + "\n--------------------------------------------------------------"; 
         sendMsg = msg1 + msg2; myBot.sendMessage(msg.sender.id, sendMsg); // Mengirim pesan
       }
       else if(msg.callbackQueryData.equals(InlineMenu4)){ // Menampilkan data monitoring intensitas cahaya beserta statusnya
         Serial.println("\n<------------------------------->");
-        Serial.println("Deteksi Cahaya: " + String(cahaya) + "lx");
-        Serial.println(info_intensitascahaya);
-        Serial.println(statusSinar);
+        Serial.println("Deteksi Cahaya: " + String(lux, 2) + "lx");
+        Serial.println(info_intensitas_cahaya);
+        Serial.println(status_sinar);
         Serial.println("<------------------------------->\n");
         msg1 = "🙋🏻‍♂️ Hai @" + msg.sender.username + " 👋👋\nBerikut hasil monitoring cahaya pada tanaman echeveria terkini:\n\n--------------------------------------------------------------\n ☀️ MONITORING LIGHT INTENSITY \n--------------------------------------------------------------\n";
-        msg2 = "📲 Cahaya tanaman: " + String(cahaya) + "lx\n✍️ " + String(statusSinar) + "\n--------------------------------------------------------------"; 
+        msg2 = "📲 Cahaya tanaman: " + String(lux, 2) + "lx\n✍️ " + String(status_sinar) + "\n--------------------------------------------------------------"; 
         sendMsg = msg1 + msg2; myBot.sendMessage(msg.sender.id, sendMsg); // Mengirim pesan
       }
       else if(msg.callbackQueryData.equals(InlineMenu5)){ // Opsi controlling
@@ -344,32 +352,23 @@ void botTelegram() {
 }
 
 // Method untuk memulai LCD
-void LCDinit(){
+void lcdInit(){
   lcd.init(); // Memulai LCD
   lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Starting"); lcd.setCursor(1,1); lcd.print("Smart System..."); delay(2500); // Tampilan Pertama
   lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Welcome to"); lcd.setCursor(1,1); lcd.print("Echeveria BoT..."); delay(2500); // Tampilan Kedua
   lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Loading...."); delay(5000); // Tampilan Ketiga
 }
 
-// Method untuk menampilkan data sensor ke LCD
-void PrintLCD(){
-  lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Suhu Udara:"); lcd.setCursor(1,1); lcd.print(""+String(suhu_udara)+" "+String((char)223)+"C"); delay(1000);
-  lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Kelem.Udara:"); lcd.setCursor(1,1); lcd.print(""+String(kelembaban_udara)+" %"); delay(1000);
-  lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Kelem.Tanah:"); lcd.setCursor(1,1); lcd.print(""+String(kelembaban_tanah)+" %"); delay(1000);
-  lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Int.Cahaya:"); lcd.setCursor(1,1); lcd.print(""+String(cahaya)+" lx"); delay(1000);
-}
-
 // Method yang dijalankan sekali
 void setup() {
   Serial.begin(SERIAL_DEBUG_BAUD); // Baudrate untuk papan ESP
-  ConnectToWiFi(); // Memanggil method ConnectToWiFi
+  connectToWiFi(); // Memanggil method connectToWiFi
   client.setServer(MQTT_SERVER, 1883); // Mengatur nama server dan port untuk keperluan client
   connectBot(); // Memanggil method connectBot
-  ButtonBot(); // Memanggil method ButtonBot
-  LCDinit(); // Memanggil method LCDinit
+  buttonBot(); // Memanggil method buttonBot
+  lcdInit(); // Memanggil method lcdInit
   fc28.begin(); // Memulai sensor fc-28
   dht.begin(); // Memulai sensor dht
-  pinMode(LDR_PIN, INPUT); // LDR sebagai INPUT
   pinMode(RPOMPA1_PIN, OUTPUT); // Pompa 1 sebagai OUTPUT
   pinMode(RPOMPA2_PIN, OUTPUT); // Pompa 2 sebagai OUTPUT
   digitalWrite(RPOMPA1_PIN, relayOFF); // Default relay1: OFF
@@ -382,11 +381,9 @@ void loop() {
     reconnect(); // Memanggil method reconnect
   }
   if ((millis() - lastTime) > timerDelay) { // Jika waktu sekarang dikurangi waktu terakhir lebih besar dari 1 detik maka :
-    BacaSensor(); // Memanggil method BacaSensor
-    TresholdSensorState(); // Memanggil method ThresholdSensorState
-    PrintLCD(); // Memanggil method PrintLCD
+    readSensor(); // Memanggil method readSensor
     botTelegram(); // Memanggil method botTelegram
-    KirimTB(); // Memanggil method KirimTB 
+    sendTB(); // Memanggil method sendTB
     lastTime = millis(); // Untuk menghitung waktu yang telah berlalu sejak pengiriman data terakhir
   }
   client.loop(); // Perulangan pada client
