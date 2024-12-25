@@ -80,7 +80,9 @@ void connectBot() {
   Serial.println("\nMenghubungkan ke: echeveria_bot..."); // Cetak ke serial monitor
 
   if(myBot.testConnection()){ // Jika bot telegram tersambung ke jaringan maka cetak ke serial monitor :
-    Serial.println("Bot telegram berhasil tersambung ...[SUKSES]\n"); 
+    Serial.println("\n=========================================");
+    Serial.println("Bot telegram berhasil tersambung ...[SUKSES]"); 
+    Serial.println("=========================================\n");
   } else{ // Jika bot telegram tidak tersambung ke jaringan maka cetak ke serial monitor :
     Serial.print("Bot telegram gagal tersambung\nMenyambungkan kembali\n"); 
     while (!myBot.testConnection()){ // Selama bot telegram tidak tersambung ke jaringan maka cetak ke serial monitor :
@@ -99,7 +101,7 @@ void readSensor(){
     Serial.println("Suhu Udara: "+String(temp)+"°C");
     lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Suhu Udara:"); 
     lcd.setCursor(1,1); lcd.print(""+String(temp, 2)+" "+String((char)223)+"C"); delay(1000);
-    sendData(float(temp),int(old_hum),int(old_moisture),int(old_lux));
+    sendData(float(temp, 2),int(old_hum),int(old_moisture),int(old_lux));
     old_temp = temp; 
   }
 
@@ -111,7 +113,7 @@ void readSensor(){
     Serial.println("Kelembaban Udara: "+String(hum)+"%");  
     lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Kelem.Udara:"); 
     lcd.setCursor(1,1); lcd.print(""+String(hum)+" %"); delay(1000);
-    sendData(float(old_temp),int(hum),int(old_moisture),int(old_lux));
+    sendData(float(old_temp, 2),int(hum),int(old_moisture),int(old_lux));
     old_hum = hum; 
   }
 
@@ -124,7 +126,7 @@ void readSensor(){
     Serial.println("Kelembaban Tanah: "+String(moisture)+"%");
     lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Kelem.Tanah:"); 
     lcd.setCursor(1,1); lcd.print(""+String(moisture)+" %"); delay(1000);
-    sendData(float(old_temp),int(old_hum),int(moisture),int(old_lux));
+    sendData(float(old_temp, 2),int(old_hum),int(moisture),int(old_lux));
     old_moisture = moisture; 
   }
   
@@ -143,7 +145,7 @@ void readSensor(){
     Serial.println("Intensitas Cahaya: "+String(lux)+"lux");
     lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Int.Cahaya:"); 
     lcd.setCursor(1,1); lcd.print(""+String(lux)+" lx"); delay(1000);
-    sendData(float(old_temp),int(old_hum),int(old_moisture),int(lux));
+    sendData(float(old_temp, 2),int(old_hum),int(old_moisture),int(lux));
     old_lux = lux; 
   }
 
