@@ -267,7 +267,7 @@ void botTelegram() {
         Serial.println(status_udara);
         Serial.println("<------------------------------->\n");
         msg1 = "🙋🏻‍♂️ Hai @" + msg.sender.username + " 👋👋\nBerikut hasil monitoring suhu udara pada tanaman echeveria terkini:\n\n--------------------------------------------------------------\n 🌤️ MONITORING TEMPERATURE \n--------------------------------------------------------------\n";
-        msg2 = "📲 Suhu udara tanaman: " + String(temp) + "°C\n✍️ " + String(status_udara) + "\n--------------------------------------------------------------"; 
+        msg2 = "📲 Suhu udara tanaman: " + String(temp, 2) + "°C\n✍️ " + String(status_udara) + "\n--------------------------------------------------------------"; 
         sendMsg = msg1 + msg2; myBot.sendMessage(msg.sender.id, sendMsg); // Mengirim pesan
       }
       else if(msg.callbackQueryData.equals(InlineMenu2)){ // Menampilkan data monitoring kelembaban udara beserta statusnya
