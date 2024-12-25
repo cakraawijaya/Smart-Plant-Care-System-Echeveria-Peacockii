@@ -21,7 +21,7 @@ Echeveria Peacockii merupakan jenis tanaman yang memiliki kekerabatan dengan kak
 | Protokol Komunikasi | • Inter Integrated Circuit (I2C)<br>• Message Queuing Telemetry Transport (MQTT)<br>• Transmission Control Protocol/Internet Protocol (TCP/IP)<br>• MTProto |
 | Arsitektur IoT | 4 Lapisan |
 | Bahasa Pemrograman | C/C++ |
-| Pustaka Arduino | • WiFi (bawaan)<br>• Wire (bawaan)<br>• BlynkSimpleEsp32<br>• ThingsBoard<br>• PubSubClient<br>• CTBot<br>• ArduinoJson<br>• LiquidCrystal_I2C<br>• DHT_sensor_library<br>• ESP_FC28_Library |
+| Pustaka Arduino | • WiFi (bawaan)<br>• BlynkSimpleEsp32<br>• ThingsBoard<br>• PubSubClient<br>• CTBot<br>• ArduinoJson<br>• LiquidCrystal_I2C<br>• DHT_sensor_library<br>• ESP_FC28_Library |
 | Aktuator | Submersible pump (x2) |
 | Sensor | • FC-28: Kelembaban Tanah Resistif (x1)<br>• LDR: Cahaya (x1)<br>• DHT22: Suhu & Kelembaban Udara (x1) |
 | Layar | LCD I2C (x1) |
@@ -557,6 +557,14 @@ void loop() {
 
 ## Demonstrasi Aplikasi
 Via Telegram: <a href="https://t.me/echeveria_bot">@echeveria_bot</a>
+
+<br><br>
+
+## Catatan
+<blockquote>
+   <h3><img src="https://github.com/user-attachments/assets/932b96eb-cbc7-42f1-8938-43cb431889a5" width="16" height="16"> Penting</h3>
+   Pada proyek ini, fungsi millis() telah diterapkan untuk meminimalkan pemblokiran kode dan meningkatkan efisiensi. Namun, untuk mendapatkan hasil yang jauh lebih optimal di masa depan, disarankan menggunakan RTOS (Real-Time Operating System) untuk mengelola prioritas tugas.
+</blockquote>
 
 <br><br>
 

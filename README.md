@@ -21,7 +21,7 @@ Echeveria Peacockii is a type of plant that is related to cactus, but there are 
 | Communications Protocol | • Inter Integrated Circuit (I2C)<br>• Message Queuing Telemetry Transport (MQTT)<br>• Transmission Control Protocol/Internet Protocol (TCP/IP)<br>• MTProto |
 | IoT Architecture | 4 Layer |
 | Programming Language | C/C++ |
-| Arduino Library | • WiFi (default)<br>• Wire (default)<br>• BlynkSimpleEsp32<br>• ThingsBoard<br>• PubSubClient<br>• CTBot<br>• ArduinoJson<br>• LiquidCrystal_I2C<br>• DHT_sensor_library<br>• ESP_FC28_Library |
+| Arduino Library | • WiFi (default)<br>• BlynkSimpleEsp32<br>• ThingsBoard<br>• PubSubClient<br>• CTBot<br>• ArduinoJson<br>• LiquidCrystal_I2C<br>• DHT_sensor_library<br>• ESP_FC28_Library |
 | Actuators | Submersible pump (x2) |
 | Sensor | • FC-28: Resistive Soil Moisture (x1)<br>• LDR: Light Dependent Resistor (x1)<br>• DHT22: Air Temperature & Humidity (x1) |
 | Display | LCD I2C (x1) |
@@ -560,6 +560,14 @@ void loop() {
 
 ## Demonstration of Application
 Via Telegram: <a href="https://t.me/echeveria_bot">@echeveria_bot</a>
+
+<br><br>
+
+## Notes
+<blockquote>
+   <h3><img src="https://github.com/user-attachments/assets/932b96eb-cbc7-42f1-8938-43cb431889a5" width="16" height="16"> Important</h3>
+   In this project, the millis() function has been implemented to minimize code blocking and improve efficiency. However, to get much more optimized results in the future, it is recommended to use RTOS (Real-Time Operating System) to manage task prioritization.
+</blockquote>
 
 <br><br>
 
