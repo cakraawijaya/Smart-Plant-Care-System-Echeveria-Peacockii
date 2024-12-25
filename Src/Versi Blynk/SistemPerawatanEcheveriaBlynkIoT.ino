@@ -98,7 +98,7 @@ void readSensor(){
 
   // Cek perubahan nilai temperatur udara
   if(temp != old_temp){  
-    Serial.println("Suhu Udara: "+String(temp)+"°C");
+    Serial.println("Suhu Udara: "+String(temp, 2)+"°C");
     lcd.clear(); lcd.backlight(); lcd.setCursor(1,0); lcd.print("Suhu Udara:"); 
     lcd.setCursor(1,1); lcd.print(""+String(temp, 2)+" "+String((char)223)+"C"); delay(1000);
     sendData(float(temp, 2),int(old_hum),int(old_moisture),int(old_lux));
