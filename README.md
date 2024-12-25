@@ -55,10 +55,12 @@ Echeveria Peacockii is a type of plant that is related to cactus, but there are 
 ## Project Designs
 <table>
 <tr>
-<th colspan="2">Hardware Design</th>
+<th width="420">Infrastructure</th>
+<th width="420">Pictorial Diagram</th>
 </tr>
 <tr>
-<td width="840"><img src="Assets/Documentation/Diagram/Pictorial Diagram.jpg" alt="pictorial-diagram"></td>
+<td><img src="Assets/Documentation/Diagram/Infrastructure.jpg" alt="infrastructure"></td>
+<td><img src="Assets/Documentation/Diagram/Pictorial Diagram.jpg" alt="pictorial-diagram"></td>
 </tr>
 </table>
 <table>
@@ -68,6 +70,14 @@ Echeveria Peacockii is a type of plant that is related to cactus, but there are 
 <tr>
 <td width="420"><img src="Assets/Documentation/Diagram/Flowchart Blynk.jpg" alt="flowchart-blynk"></td>
 <td width="420"><img src="Assets/Documentation/Diagram/Flowchart Thingsboard.jpg" alt="flowchart-thingsboard"></td>
+</tr>
+</table>
+<table>
+<tr>
+<th width="840">Wiring</th>
+</tr>
+<tr>
+<td><img src="Assets/Documentation/Table/Device Wiring.jpg" alt="device-wiring"></td>
 </tr>
 </table>
 
