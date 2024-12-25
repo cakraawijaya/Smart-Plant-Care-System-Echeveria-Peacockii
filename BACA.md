@@ -55,11 +55,17 @@ Echeveria Peacockii merupakan jenis tanaman yang memiliki kekerabatan dengan kak
 ## Rancangan Proyek
 <table>
 <tr>
-<th width="420">Infrastruktur</th>
-<th width="420">Diagram Ilustrasi</th>
+<th width="840">Infrastruktur</th>
 </tr>
 <tr>
 <td><img src="Assets/Documentation/Diagram/Infrastructure.jpg" alt="infrastructure"></td>
+</tr>
+</table>
+<table>
+<tr>
+<th width="840">Diagram Ilustrasi</th>
+</tr>
+<tr>
 <td><img src="Assets/Documentation/Diagram/Pictorial Diagram.jpg" alt="pictorial-diagram"></td>
 </tr>
 </table>
