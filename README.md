@@ -579,9 +579,8 @@ Via Telegram: <a href="https://t.me/echeveria_bot">@echeveria_bot</a>
 
 <br><br>
 
-## Notes
+## <img src="https://github.com/user-attachments/assets/932b96eb-cbc7-42f1-8938-43cb431889a5" width="16" height="16"> Notes
 <blockquote>
-   <h3><img src="https://github.com/user-attachments/assets/932b96eb-cbc7-42f1-8938-43cb431889a5" width="16" height="16"> Important</h3>
    In this project, the millis() function has been implemented to minimize code blocking and improve efficiency. However, to get much more optimized results in the future, it is recommended to use RTOS (Real-Time Operating System) to manage task prioritization.
 </blockquote>
 

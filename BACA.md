@@ -576,9 +576,8 @@ Via Telegram: <a href="https://t.me/echeveria_bot">@echeveria_bot</a>
 
 <br><br>
 
-## Catatan
+## <img src="https://github.com/user-attachments/assets/932b96eb-cbc7-42f1-8938-43cb431889a5" width="16" height="16"> Catatan
 <blockquote>
-   <h3><img src="https://github.com/user-attachments/assets/932b96eb-cbc7-42f1-8938-43cb431889a5" width="16" height="16"> Penting</h3>
    Pada proyek ini, fungsi millis() telah diterapkan untuk meminimalkan pemblokiran kode dan meningkatkan efisiensi. Namun, untuk mendapatkan hasil yang jauh lebih optimal di masa depan, disarankan menggunakan RTOS (Real-Time Operating System) untuk mengelola prioritas tugas.
 </blockquote>
 
