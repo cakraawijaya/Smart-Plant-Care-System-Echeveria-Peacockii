@@ -25,7 +25,7 @@ Echeveria Peacockii is a type of plant that is related to cactus, but there are 
 | Actuators | Submersible pump (x2) |
 | Sensor | • FC-28: Resistive Soil Moisture (x1)<br>• LDR: Light Dependent Resistor (x1)<br>• DHT22: Air Temperature & Humidity (x1) |
 | Display | LCD I2C (x1) |
-| Other Components | • Micro USB cable - USB type A (x1)<br>• Jumper cable (1 set)<br>• ESP32 expansion board (x1)<br>• Breadboard (x1)<br>• Electrical relay 2 channel (x1)<br>• Adaptor DC 5V (x1)<br>• Resistor<br>• Casing box (x1)<br>• Bolts plus (1 set)<br>• Nuts (1 set) |
+| Other Components | • Micro USB cable - USB type A (x1)<br>• Jumper cable (1 set)<br>• ESP32 expansion board (x1)<br>• Breadboard (x1)<br>• Electromechanical relay 2-channel (x1)<br>• Adaptor DC 5V (x1)<br>• Resistor<br>• Casing box (x1)<br>• Bolts plus (1 set)<br>• Nuts (1 set) |
 
 <br><br>
 
