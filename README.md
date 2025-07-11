@@ -166,7 +166,7 @@ void loop() {
       How to setup the ``` DOIT ESP32 DEVKIT V1 ``` board
             
       </th></tr>
-      <tr><td>
+      <tr><td width="810">
          
       • Click ``` Tools ``` -> ``` Board ``` -> ``` Boards Manager ``` -> Install ``` esp32 ```.
    
