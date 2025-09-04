@@ -1,10 +1,10 @@
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?style=flat)](https://github.com/ellerbrock/open-source-badges/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?logo=github&color=%23F7DF1E)](https://opensource.org/licenses/MIT)
-![GitHub last commit](https://img.shields.io/github/last-commit/cakraawijaya/Sistem-Perawatan-Echeveria-Peacockii-Berbasis-Bot-of-Things?logo=Codeforces&logoColor=white&color=%23F7DF1E)
+![GitHub last commit](https://img.shields.io/github/last-commit/cakraawijaya/Smart-Plant-Care-System-Echeveria-Peacockii?logo=Codeforces&logoColor=white&color=%23F7DF1E)
 ![Project](https://img.shields.io/badge/Project-ESP32-light.svg?style=flat&logo=espressif&logoColor=white&color=%23F7DF1E)
 ![Type](https://img.shields.io/badge/Type-Apprenticeship-light.svg?style=flat&logo=gitbook&logoColor=white&color=%23F7DF1E)
 
-# Sistem-Perawatan-Echeveria-Peacockii-Berbasis-Bot-of-Things
+# Smart Plant Care System (Echeveria Peacockii)
 <strong>Tugas Akhir IoT Master Class Indobot 2022</strong><br><br>
 Echeveria Peacockii merupakan jenis tanaman yang memiliki kekerabatan dengan kaktus, namun pada tubuh tanaman ini tidak dijumpai adanya duri, sehingga sangat diminati oleh para pecinta tanaman hias. Perawatan Echeveria Peacockii hingga saat ini masih dilakukan secara konvensional, sehingga boros waktu dan tenaga. Oleh karena itu, proyek ini dibuat untuk mendapatkan sistem yang mampu melakukan penyiraman sekaligus mampu memantau perubahan kondisi yang ada di lingkungan sekitar tanaman. Proyek ini telah dilaksanakan dan memakan waktu kurang lebih 1 bulan. Antarmuka sistem menggunakan Bot Telegram. Hasil penelitian menunjukkan bahwa sistem yang dibuat dapat berfungsi dengan baik.
 
