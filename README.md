@@ -4,7 +4,7 @@
 ![Project](https://img.shields.io/badge/Project-ESP32-light.svg?style=flat&logo=espressif&logoColor=white&color=%23F7DF1E)
 ![Type](https://img.shields.io/badge/Type-Apprenticeship-light.svg?style=flat&logo=gitbook&logoColor=white&color=%23F7DF1E)
 
-# Sistem-Perawatan-Echeveria-Peacockii-Berbasis-Bot-of-Things
+# Smart Plant Care System (Echeveria Peacockii)
 <strong>IoT Master Class Indobot 2022 Final Project</strong><br><br>
 Echeveria Peacockii is a type of plant that is related to cactus, but there are no thorns on the body of this plant, making it very attractive to ornamental plant lovers. The care of Echeveria Peacockii until now is still done conventionally, making it wasteful of time and energy. Therefore, this project was created to obtain a system that is able to perform watering as well as being able to monitor changes in conditions that exist in the environment around the plant. This project has been implemented and took approximately 1 month. The system interface uses Telegram Bot. The results showed that the system created can function properly.
 
