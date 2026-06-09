@@ -21,7 +21,7 @@ Echeveria Peacockii is a type of plant that is related to cactus, but there are 
 | Communications Protocol | • Inter Integrated Circuit (I2C)<br>• Message Queuing Telemetry Transport (MQTT)<br>• Transmission Control Protocol/Internet Protocol (TCP/IP)<br>• MTProto |
 | IoT Architecture | 4 Layer |
 | Programming Language | C/C++ |
-| Arduino Library | • WiFi (default)<br>• BlynkSimpleEsp32<br>• ThingsBoard<br>• PubSubClient<br>• CTBot<br>• ArduinoJson<br>• LiquidCrystal_I2C<br>• DHT_sensor_library<br>• ESP_FC28 |
+| Arduino Library | • WiFi (default)<br>• BlynkSimpleEsp32 by Volodymyr Shymanskyy (Version: 1.1.0)<br>• ThingsBoard by ThingsBoard Team (Version: 0.9.0)<br>• PubSubClient by Nick O'Leary (Version: 2.8)<br>• CTBot by Stefano Ledda (Version: 2.1.11)<br>• ArduinoJson by Benoit Blanchon (Version: 6.19.4)<br>• LiquidCrystal_I2C by Frank de Brabander (Version: 1.1.2)<br>• DHT_sensor_library by Adafruit (Version: 1.4.6)<br>• ESP_FC28 by cakraawijaya (Version: 1.0.0) |
 | Actuators | Submersible pump (x2) |
 | Sensor | • FC-28: Resistive Soil Moisture (x1)<br>• LDR: Light Dependent Resistor (x1)<br>• DHT22: Air Temperature & Humidity (x1) |
 | Display | LCD I2C (x1) |
