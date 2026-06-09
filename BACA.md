@@ -21,7 +21,7 @@ Echeveria Peacockii merupakan jenis tanaman yang memiliki kekerabatan dengan kak
 | Protokol Komunikasi | • Inter Integrated Circuit (I2C)<br>• Message Queuing Telemetry Transport (MQTT)<br>• Transmission Control Protocol/Internet Protocol (TCP/IP)<br>• MTProto |
 | Arsitektur IoT | 4 Lapisan |
 | Bahasa Pemrograman | C/C++ |
-| Pustaka Arduino | • WiFi (bawaan)<br>• BlynkSimpleEsp32<br>• ThingsBoard<br>• PubSubClient<br>• CTBot<br>• ArduinoJson<br>• LiquidCrystal_I2C<br>• DHT_sensor_library<br>• ESP_FC28 |
+| Pustaka Arduino | • WiFi (bawaan)<br>• BlynkSimpleEsp32 oleh Volodymyr Shymanskyy (Versi: 1.1.0)<br>• ThingsBoard oleh ThingsBoard Team (Versi: 0.9.0)<br>• PubSubClient oleh Nick O'Leary (Versi: 2.8)<br>• CTBot oleh Stefano Ledda (Versi: 2.1.11)<br>• ArduinoJson oleh Benoit Blanchon (Versi: 6.19.4)<br>• LiquidCrystal_I2C oleh Frank de Brabander (Versi: 1.1.2)<br>• DHT_sensor_library oleh Adafruit (Versi: 1.4.6)<br>• ESP_FC28 oleh cakraawijaya (Versi: 1.0.0) |
 | Aktuator | Submersible pump (x2) |
 | Sensor | • FC-28: Kelembaban Tanah Resistif (x1)<br>• LDR: Cahaya (x1)<br>• DHT22: Suhu & Kelembaban Udara (x1) |
 | Layar | LCD I2C (x1) |
