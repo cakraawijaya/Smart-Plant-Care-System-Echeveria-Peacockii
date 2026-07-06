@@ -23,7 +23,7 @@ Echeveria Peacockii merupakan jenis tanaman yang memiliki kekerabatan dengan kak
 | Bahasa Pemrograman | C/C++ |
 | Pustaka Arduino | • WiFi (bawaan)<br>• BlynkSimpleEsp32 oleh Volodymyr Shymanskyy (Versi: 1.1.0)<br>• ThingsBoard oleh ThingsBoard Team (Versi: 0.9.0)<br>• PubSubClient oleh Nick O'Leary (Versi: 2.8)<br>• CTBot oleh Stefano Ledda (Versi: 2.1.11)<br>• ArduinoJson oleh Benoit Blanchon (Versi: 6.19.4)<br>• LiquidCrystal_I2C oleh Frank de Brabander (Versi: 1.1.2)<br>• DHT_sensor_library oleh Adafruit (Versi: 1.4.6)<br>• ESP_FC28 oleh cakraawijaya (Versi: 1.0.0) |
 | Aktuator | Submersible pump (x2) |
-| Sensor | • FC-28: Kelembaban Tanah Resistif (x1)<br>• LDR: Cahaya (x1)<br>• DHT22: Suhu & Kelembaban Udara (x1) |
+| Sensor | • FC-28: Kelembaban Tanah Resistif (x1)<br>• LDR: Resistor Cahaya 12mm (x1)<br>• DHT22: Suhu & Kelembaban Udara (x1) |
 | Layar | LCD I2C (x1) |
 | Komponen Lainnya | • Kabel USB Mikro - USB tipe A (x1)<br>• Kabel jumper (1 set)<br>• Papan ekspansi ESP32 (x1)<br>• Breadboard (x1)<br>• Relay elektromekanis 2-channel (x1)<br>• Adaptor DC 5V (x1)<br>• Resistor (x2)<br>• Kotak casing (x1)<br>• Baut plus (1 set)<br>• Mur (1 set) |
 
